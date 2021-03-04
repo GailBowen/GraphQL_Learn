@@ -30,7 +30,8 @@ const typeDefs = `
 
   type Query {
 		totalPhotos: Int!,
-        allPhotos: [Photo!]!
+    allPhotos: [Photo!]!,
+    allUsers: [User!]!
 	}
 
   input PostPhotoInput {
@@ -78,10 +79,9 @@ var photos = [
 
 const resolvers = {
   Query: {
-
     totalPhotos: () => photos.length,
     allPhotos: () => photos,
-
+    allUsers: () => users
   },
 
 
@@ -102,19 +102,25 @@ const resolvers = {
   Photo: {
     url: parent => `www.beautifulsite.com/img/${parent.name}.jpg`,
     postedBy: parent => {return users.find(u => u.githubLogin == parent.githubUser)}
+  },
+
+  User: {
+    postedPhotos: parent => {
+      return photos.filter(p => p.githubUser == parent.githubLogin);
+    }
   }
 
 }
 
-// 2. Create a new instance of the server.
-// 3. Send it an object with typeDefs (the schema) and resolvers
+// Create a new instance of the server.
+// Send it an object with typeDefs (the schema) and resolvers
 const server = new ApolloServer({
   typeDefs,
   resolvers
 })
 
 
-// 4. Call listen on the server to launch the web server
+// Call listen on the server to launch the web server
 server
   .listen()
   .then(({url}) => console.log(`GraphQL Service running on ${url}`))
