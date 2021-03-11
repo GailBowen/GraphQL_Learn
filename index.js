@@ -3,7 +3,7 @@ const { ApolloServer } = require('apollo-server')
 const { GraphQLScalarType } = require('graphql')
 
 const typeDefs = `
-  scalar DateTime
+  scalar SpecialDate
 
   type Tag {
     photoID: ID!
@@ -35,7 +35,7 @@ const typeDefs = `
         githubUser: String!
         postedBy: User!
         taggedUsers:[User]
-        created: DateTime!
+        created: SpecialDate!
   }
 
   type Query {
@@ -141,8 +141,8 @@ const resolvers = {
           .map(photoID => photos.find(photo => photo.id === photoID))
   },
 
-  DateTime: new GraphQLScalarType({
-    name: 'DateTime',
+  SpecialDate: new GraphQLScalarType({
+    name: 'SpecialDate',
     description: 'A valid date time value.',
     parseValue: value => new Date(value),
     serialize: value => new Date(value).toISOString(),
