@@ -89,7 +89,8 @@ var tags = [
   { "photoID": "2", "userID": "sSchmidt" },
   { "photoID": "2", "userID": "mHattrup" },
   { "photoID": "2", "userID": "gPlake" },
-  { "photoID": "3", "userID": "gPlake" }
+  { "photoID": "3", "userID": "gPlake" },
+  { "photoID": "1", "userID": "mHattrup" },
 ]
 
 const resolvers = {
@@ -128,18 +129,11 @@ const resolvers = {
     postedPhotos: parent => {
       return photos.filter(p => p.githubUser == parent.githubLogin);
     },
-    taggedPhotos: parent => {
-      filteredTags = tags.filter(t => t.userID == parent.githubLogin);
-      
-      myPhotos = [];
-      
-      for (index = 0; index < filteredTags.length; ++index) {
-          myPhotos.push(photos.find(p => p.id == filteredTags[index].photoID));
-      }
-
-      return myPhotos;
-    }
-    
+    taggedPhotos: parent => 
+        tags
+          .filter(tag => tag.userID === parent.githubLogin)
+          .map(tag => tag.photoID)
+          .map(photoID => photos.find(photo => photo.id === photoID))
   }
 
 }
