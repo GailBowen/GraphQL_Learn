@@ -40,7 +40,7 @@ const typeDefs = `
 
   type Query {
 		totalPhotos: Int!,
-    allPhotos: [Photo!]!,
+    allPhotos(after: SpecialDate): [Photo!]!,
     allUsers: [User!]!
 	}
 
@@ -49,7 +49,6 @@ const typeDefs = `
     category: PhotoCategory=PORTRAIT
     description: String
     githubUser: String!
-    created: SpecialDate!
   }
 
   type Mutation {
@@ -65,31 +64,8 @@ var users = [
   { "githubLogin": "gFoad", "name": "Gail Foad" }
 ]
 
-var photos = [
-  {
-    "id": "1",
-    "name": "Dropping the Heart Chute",
-    "description": "The heart chute is one of my favorite chutes",
-    "category": "ACTION",
-    "githubUser": "gPlake",
-    "created": "01/01/2017"
-  },
-  {
-    "id": "2",
-    "name": "Enjoying the sunshine",
-    "category": "SELFIE",
-    "githubUser": "sSchmidt",
-    "created": "01/01/2018"
-  },
-  {
-    id: "3",
-    "name": "Gunbarrel 25",
-    "description": "25 laps on gunbarrel today",
-    "category": "LANDSCAPE",
-    "githubUser": "sSchmidt",
-    "created": "01/01/2019"
-  }
-]
+var photos = [];
+
 
 var tags = [
   { "photoID": "2", "userID": "sSchmidt" },
@@ -102,7 +78,14 @@ var tags = [
 const resolvers = {
   Query: {
     totalPhotos: () => photos.length,
-    allPhotos: () => photos,
+    allPhotos: (parent, args) => {
+      args.after; // JavaScript Date Object
+      console.log(args.after);
+      console.log(photos);
+      
+      
+      return photos.filter(photo => photo.created > args.after);
+    },
     allUsers: () => users
   },
 
@@ -112,7 +95,8 @@ const resolvers = {
 
         var newPhoto = {
           id: _id++,
-          ...args.input
+          ...args.input,
+          created: new Date()
         } 
         
         photos.push(newPhoto);
