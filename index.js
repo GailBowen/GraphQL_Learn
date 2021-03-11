@@ -49,6 +49,7 @@ const typeDefs = `
     category: PhotoCategory=PORTRAIT
     description: String
     githubUser: String!
+    created: SpecialDate!
   }
 
   type Mutation {
