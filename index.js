@@ -33,6 +33,7 @@ const typeDefs = `
         category: PhotoCategory!
         githubUser: String!
         postedBy: User!
+        taggedUsers:[User]
   }
 
   type Query {
@@ -85,7 +86,6 @@ var photos = [
 ]
 
 var tags = [
-  { "photoID": "1", "userID": "gPlake" },
   { "photoID": "2", "userID": "sSchmidt" },
   { "photoID": "2", "userID": "mHattrup" },
   { "photoID": "2", "userID": "gPlake" },
@@ -116,7 +116,18 @@ const resolvers = {
 
   Photo: {
     url: parent => `www.beautifulsite.com/img/${parent.name}.jpg`,
-    postedBy: parent => {return users.find(u => u.githubLogin == parent.githubUser)}
+    postedBy: parent => {return users.find(u => u.githubLogin == parent.githubUser)},
+    taggedUsers: parent => {
+      filteredTags = tags.filter(t => t.photoID == parent.id);
+
+      myUsers = [];
+      
+      for (index = 0; index < filteredTags.length; ++index) {
+        myUsers.push(users.find(u => u.githubLogin == filteredTags[index].userID));
+      }
+
+      return myUsers;
+    }
   },
 
   User: {
@@ -133,7 +144,6 @@ const resolvers = {
       }
 
       return myPhotos;
-
     }
     
   }
