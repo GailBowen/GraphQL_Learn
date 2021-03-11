@@ -117,17 +117,11 @@ const resolvers = {
   Photo: {
     url: parent => `www.beautifulsite.com/img/${parent.name}.jpg`,
     postedBy: parent => {return users.find(u => u.githubLogin == parent.githubUser)},
-    taggedUsers: parent => {
-      filteredTags = tags.filter(t => t.photoID == parent.id);
-
-      myUsers = [];
-      
-      for (index = 0; index < filteredTags.length; ++index) {
-        myUsers.push(users.find(u => u.githubLogin == filteredTags[index].userID));
-      }
-
-      return myUsers;
-    }
+    taggedUsers: parent => 
+     tags
+      .filter(tag => tag.photoID === parent.id)
+      .map(tag => tag.userID)
+      .map(tagnum => users.find(u => u.githubLogin === tagnum))
   },
 
   User: {
