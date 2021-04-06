@@ -1,6 +1,10 @@
 // 1. Require 'apollo-server'
-const { ApolloServer } = require('apollo-server')
+const expressPlayground = require('graphql-playground-middleware-express').default
+const { ApolloServer } = require('apollo-server-express')
+const express = require('express')
 const { GraphQLScalarType } = require('graphql')
+
+
 
 const typeDefs = `
   scalar SpecialDate
@@ -82,9 +86,10 @@ const resolvers = {
       args.after; // JavaScript Date Object
       console.log(args.after);
       console.log(photos);
+
+      //return photos.filter(photo => photo.created > args.after);
       
-      
-      return photos.filter(photo => photo.created > args.after);
+      return photos;
     },
     allUsers: () => users
   },
@@ -136,15 +141,20 @@ const resolvers = {
 
 }
 
-// Create a new instance of the server.
-// Send it an object with typeDefs (the schema) and resolvers
-const server = new ApolloServer({
-  typeDefs,
-  resolvers
-})
+// 2. Call `express()` to create an Express application
+var app = express()
 
+const server = new ApolloServer({ typeDefs, resolvers })
 
-// Call listen on the server to launch the web server
-server
-  .listen()
-  .then(({url}) => console.log(`GraphQL Service running on ${url}`))
+// 3. Call `applyMiddleware()` to allow middleware mounted on the same path
+server.applyMiddleware({ app })
+
+// 4. Create a home route
+app.get('/', (req, res) => res.end('Welcome to the PhotoShare API'))
+
+// 5. Listen on a specific port
+app.listen({ port: 4000 }, () =>
+  console.log(`GraphQL Server running @ http://localhost:4000${server.graphqlPath}`)
+)
+
+app.get('/playground', expressPlayground({ endpoint: '/graphql' }))
