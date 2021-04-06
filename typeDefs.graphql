@@ -1,0 +1,51 @@
+  scalar SpecialDate
+
+  type Tag {
+    photoID: ID!
+    userID: ID!
+  },
+
+  type User {
+    githubLogin: ID!
+    name: String
+    avatar: String
+    postedPhotos: [Photo!]!
+    taggedPhotos:[Photo]
+  }
+
+  enum PhotoCategory {
+    SELFIE
+    PORTRAIT
+    ACTION
+    LANDSCAPE
+    GRAPHIC
+  }
+
+	type Photo {
+        id: ID!
+        url: String
+        name: String!
+        description: String
+        category: PhotoCategory!
+        githubUser: String!
+        postedBy: User!
+        taggedUsers:[User]
+        created: SpecialDate!
+  }
+
+  type Query {
+		totalPhotos: Int!,
+    allPhotos(after: SpecialDate): [Photo!]!,
+    allUsers: [User!]!
+	}
+
+  input PostPhotoInput {
+    name: String!
+    category: PhotoCategory=PORTRAIT
+    description: String
+    githubUser: String!
+  }
+
+  type Mutation {
+        postPhoto(input: PostPhotoInput!): Photo!
+  }

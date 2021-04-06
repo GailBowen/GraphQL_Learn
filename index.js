@@ -4,61 +4,6 @@ const { ApolloServer } = require('apollo-server-express')
 const express = require('express')
 const { GraphQLScalarType } = require('graphql')
 
-
-
-const typeDefs = `
-  scalar SpecialDate
-
-  type Tag {
-    photoID: ID!
-    userID: ID!
-  },
-
-  type User {
-    githubLogin: ID!
-    name: String
-    avatar: String
-    postedPhotos: [Photo!]!
-    taggedPhotos:[Photo]
-  }
-
-  enum PhotoCategory {
-    SELFIE
-    PORTRAIT
-    ACTION
-    LANDSCAPE
-    GRAPHIC
-  }
-
-	type Photo {
-        id: ID!
-        url: String
-        name: String!
-        description: String
-        category: PhotoCategory!
-        githubUser: String!
-        postedBy: User!
-        taggedUsers:[User]
-        created: SpecialDate!
-  }
-
-  type Query {
-		totalPhotos: Int!,
-    allPhotos(after: SpecialDate): [Photo!]!,
-    allUsers: [User!]!
-	}
-
-  input PostPhotoInput {
-    name: String!
-    category: PhotoCategory=PORTRAIT
-    description: String
-    githubUser: String!
-  }
-
-  type Mutation {
-        postPhoto(input: PostPhotoInput!): Photo!
-  }
-`
 var _id = 4;
 
 var users = [
@@ -140,6 +85,10 @@ const resolvers = {
   })
 
 }
+
+const { readFileSync } = require('fs')
+
+const typeDefs = readFileSync('./typeDefs.graphql', 'UTF-8')
 
 // 2. Call `express()` to create an Express application
 var app = express()
